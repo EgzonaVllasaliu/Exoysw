@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}">
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <title>Home</title>
+</head>
+<body>
+    <!-- Menu -->
+    <div class="left_content">
+        <a href="/home" class="leht-row">Home</a>
+        <a href="/profile" class="leht-row">Profile</a>
+        <!-- <button onclick="changeBgColor('#FFF'); ">Display</button> -->
+        <div class="dropdown" class="leht-row">
+            <span>Display</span>
+            <div class="dropdown-content">
+                <button onclick="changeBgColor('#FFF'); " class="chBG">White</button><br>
+                <button onclick="changeBgColor('#00203FFF'); " class="chBG">Dark</button>
+            </div>
+          </div>
+          <a href="/logout" class="leht-row">Log Out</a>
+    </div>
+
+    <div class="middle_content">
+        <h1>E</h1>
+    </div>
+
+    <div class="right_content">
+        <h1>BB</h1>
+    </div>
+
+</body>
+</html>

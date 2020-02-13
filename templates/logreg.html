@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/logreg.css') }}">
+    <link rel="stylesheet" >
+    <title>Registration</title>
+</head>
+<body>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul>
+                {% for message in messages %}
+                <li class="error">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <div class="login-wrap">
+        <div class="login-html">
+            <input id="tab-1" type="radio" name="tab" class="sign-in" checked><label for="tab-1" class="tab">Sign In</label>
+            <input id="tab-2" type="radio" name="tab" class="sign-up"><label for="tab-2" class="tab">Sign Up</label>
+            <div class="login-form">
+                <div class="sign-in-htm">
+                    <form action="/login" method="POST">
+                        <div class="group">
+                            <label for="user" class="label">Email</label>
+                            <input id="user" type="text" class="input" name="email">
+                        </div>
+                        <div class="group">
+                            <label for="pass" class="label">Password</label>
+                            <input id="pass" type="password" class="input" data-type="password" name="password">
+                        </div>
+                        <div class="group" style="margin-top: 40px;">
+                            <input type="submit" class="button" value="Sign In">
+                        </div>
+                        <div class="hr"></div>
+                        <div class="foot-lnk">
+                            <label for="tab-2">Don't have an acoount?</a>
+                        </div>
+                    </form>
+                </div>
+                <div class="sign-up-htm">
+                    <form action="/register" method="POST">
+                        <div class="group">
+                            <label for="first_name" class="label">First Name</label>
+                            <input id="user" type="text" class="input" name="fname">
+                        </div>
+                        <div class="group">
+                            <label for="last_name" class="label">Last Name</label>
+                            <input id="user" type="text" class="input" name="lname">
+                        </div>
+                        <div class="group">
+                            <label for="pass" class="label">Email Address</label>
+                            <input id="pass" type="text" class="input" name="email">
+                        </div>
+                        <div class="group">
+                            <label for="pass" class="label">Password</label>
+                            <input id="pass" type="password" class="input" data-type="password" name="password">
+                        </div>
+                        <div class="group">
+                            <label for="pass" class="label">Confirm Password</label>
+                            <input id="pass" type="password" class="input" data-type="password"  name="cpassword">
+                        </div>
+                        <div class="group">
+                            <input type="submit" class="button" value="Sign Up">
+                        </div>
+                        <div class="hr"></div>
+                        <div class="foot-lnk">
+                            <label for="tab-1">Already Member?</a>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</body>
+</html>

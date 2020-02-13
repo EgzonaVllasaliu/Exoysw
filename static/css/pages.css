@@ -1,0 +1,49 @@
+body{
+	margin: 0;
+    background: #00203FFF;
+	font:600 16px/18px 'Open Sans',sans-serif;
+}
+.left_content{
+    width: 13%;
+}
+.right_content{
+    width: 13%;
+}
+.middle_content{
+    width: 67%;
+}
+
+.left_content, .middle_content, .right_content{
+    background-color: #6a6f8c;
+    display: inline-block;
+    margin: 7px;
+}
+.leht-row{
+    display: block;
+    text-align: center;
+}
+.dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #6a6f8c;
+    min-width: 80px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    padding: 3px 8px;
+    z-index: 1;
+  }
+  
+  .dropdown:hover .dropdown-content {
+    display: block;
+  }
+
+  .chBG{
+      border: none;
+      color: white;
+      background-color: dodgerblue;
+      width: 100%;
+  }
