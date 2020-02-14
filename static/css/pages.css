@@ -3,28 +3,44 @@ body{
     background: #00203FFF;
 	font:600 16px/18px 'Open Sans',sans-serif;
 }
+#wrapper{
+    width: 1000px;
+    margin: 0 auto;
+}
 .left_content{
-    width: 13%;
+    position: fixed;
+    margin: 0 7px;
 }
 .right_content{
-    width: 13%;
+    position: fixed;
+    margin: 0 7px;
+    color: white;
 }
 .middle_content{
     width: 67%;
+    border-left: 1px solid whitesmoke;
+    border-right: 1px solid whitesmoke;
+    margin-left: 130px;
 }
 
 .left_content, .middle_content, .right_content{
-    background-color: #6a6f8c;
     display: inline-block;
-    margin: 7px;
+    vertical-align: top;
 }
-.leht-row{
+.leht-row , .dropdown{
     display: block;
-    text-align: center;
+    text-align: center;     
+    text-decoration: none;
+    color: white;
+    font-weight: 600;
+    font-size: 20px;
+    padding: 10px;
+    margin-top: 20px;
 }
 .dropdown {
     position: relative;
     display: inline-block;
+    text-align: center;
   }
   
   .dropdown-content {
@@ -47,3 +63,129 @@ body{
       background-color: dodgerblue;
       width: 100%;
   }
+  .pageTitle{ 
+      color: white;
+      font-size: 13px;
+      position: fixed;
+      background-color: #00203FFF;
+      width: 42.3%;
+      border-bottom: 1px solid whitesmoke;
+  }
+  .pageTitle h1{
+      margin-left: 10px;
+  }
+  .decoration{
+    border-bottom: 1px solid whitesmoke;
+    padding: 10px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    }
+    .first_div{
+        margin-top: 80px;
+        display: flex;
+        flex-direction: column;
+    }
+    .tweetBtn{
+        border: none;
+        color: white;
+        background-color: dodgerblue;
+        border-radius: 3px;
+        padding: 3px 10px;
+        float: right;
+        margin: 5px 0;
+        font-weight: 600;
+    }
+    textarea{
+        color: white;
+        background-color: #00203FFF;
+        border: 1px solid whitesmoke;
+        border-radius: 3px;
+        padding: 15px;
+        font-size: 19px;
+    }
+    ::placeholder{
+        font-size: 20px;
+    }
+    .displayUserInformations{
+        margin: 0;
+        padding-left: 15px;
+        color: wheat;
+        font-size: 15px;
+    }
+    form{
+        padding: 10px;
+    }
+    .dot {
+        height: 5px;
+        width: 5px;
+        margin-bottom: 3px;
+        background-color: #bbb;
+        border-radius: 50%;
+        display: inline-block;
+      }
+      .tweetContent{
+          color: white;
+          border: 1px solid whitesmoke;
+          border-radius: 3px;
+          padding: 10px;
+          margin: 15px;
+      }
+      .buttons, .buttons p{
+          display: inline;
+      }
+      .buttons p{
+          float: right;
+          margin-right: 20px;
+          margin-top: 0px;
+      }
+      .buttons button{
+        border: none;
+        color: white;
+        background-color: dodgerblue;
+        border-radius: 3px;
+        padding: 3px 10px;
+        margin-left: 15px;
+        font-weight: 600;
+      }
+      .followUnfollowBtn{
+        border: none;
+        background-color: dodgerblue;
+        border-radius: 3px;
+        padding: 3px 10px;
+        margin-left: 15px;
+        font-weight: 600;
+      }
+      .followUnfollowBtn a{
+        text-decoration: none;
+        color: white;
+      }
+      .search{
+          border: none; 
+          border-radius: 40px;
+          width: 300px;
+          padding: 10px;
+          background-color: rgb(37, 51, 65);
+          font-size: 15px;
+          outline: none;
+          color: white;
+      }
+    .whoToFollow{
+        background-color: rgb(37, 51, 65);
+        border-radius: 10px;
+        padding: 7px;
+        margin-left: 9px;
+        margin-top: 100px;
+    }
+    .whoToFollow h3{
+        padding-left: 15px;
+    }
+    .followUnfollowSession{
+        padding: 15px;
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px solid whitesmoke;
+    }
+    .whoToFollowTitle{
+        border-bottom: 1px solid whitesmoke;
+    }

@@ -104,13 +104,140 @@ def login():
             flash("Please use a valid email address")
             return redirect("/")  
 
-@app.route('/home')
+@app.route("/home")
 def home():
+    if 'user_id' not in session:
+        return redirect("/")  
     
-    return render_template('home.html')  
-   
+    mysql = connectToMySQL(schema)
+    query = "SELECT * FROM users WHERE user_id = %(id)s"
+    data = {
+        "id" : session['user_id']
+    } 
+    user = mysql.query_db(query, data)
+    
+    query = "SELECT * FROM users WHERE user_id <> %(id)s ORDER BY last_name ASC"
+    mysql = connectToMySQL(schema)
+    data = {
+        'id': session['user_id']
+    }
+    users = mysql.query_db(query, data)
 
+    mysql = connectToMySQL(schema)
+    query = "SELECT user_being_followed FROM followed_users WHERE user_following = %(id)s"
+    data = {
+        'id': session['user_id']
+    }
+    followed_users = [user['user_being_followed'] for user in mysql.query_db(query, data)]
+    
+    mysql = connectToMySQL(schema)
+    query = "SELECT tweets.user_id, tweets.tweet_id as tweet_id, users.first_name,users.last_name,  tweets.content, tweets.created_at, tweets.content, COUNT(liked_tweets.tweet_id) as times_liked FROM liked_tweets RIGHT JOIN tweets ON tweets.tweet_id = liked_tweets.tweet_id JOIN users ON tweets.user_id = users.user_id GROUP BY tweets.tweet_id ORDER BY tweets.created_at DESC;"
+    tweets = mysql.query_db(query)
+    
+    mysql = connectToMySQL(schema)
+    query = "SELECT * FROM liked_tweets WHERE user_id = %(user_id)s"
+    data = {
+        'user_id': session['user_id']
+    }
+    liked_tweets = [tweet['tweet_id'] for tweet in mysql.query_db(query, data)]
+    
+    for tweet in tweets:
+        time_since_posted = datetime.now() - tweet['created_at']
+        days = time_since_posted.days
+        hours = time_since_posted.seconds//3600 
+        minutes = (time_since_posted.seconds//60)%60
+        if tweet['tweet_id'] in liked_tweets:
+            tweet['already_liked'] = True
+        else:
+            tweet['already_liked'] = False        
+
+        tweet['time_since_posted'] = (days, hours, minutes)
+        
+    return render_template('home.html',user=user[0], tweets=tweets, users = users, followed_users = followed_users)
    
+@app.route("/tweets/create", methods=['POST'])
+def save_tweet():
+    if 'user_id' not in session:
+        return redirect("/")
+        
+    is_valid = True
+    if len(request.form['content']) < 1:
+        is_valid = False
+        flash('Tweet cannot be blank')
+    if len(request.form['content']) >= 256:
+        is_valid = False
+        flash('Tweet cannot be more than 255 characters')
+    
+    if is_valid:
+        mysql = connectToMySQL(schema)
+        query = "INSERT INTO tweets (content, created_at, updated_at, user_id) VALUES (%(cont)s, NOW(), NOW(), %(id)s)"
+        data = {
+            'cont': request.form['content'],
+            'id': session['user_id'],
+        }
+        tweet = mysql.query_db(query, data)
+    
+    return redirect("/home")
+
+@app.route("/tweets/<tweet_id>/add_like")
+def like_tweet(tweet_id):
+    query = "INSERT INTO liked_tweets (user_id, tweet_id) VALUES (%(user_id)s, %(tweet_id)s)"
+    data = {
+        'user_id': session['user_id'],
+        'tweet_id': tweet_id
+    }
+    mysql = connectToMySQL(schema)
+    mysql.query_db(query, data)
+    return redirect("/home")
+
+@app.route("/tweets/<tweet_id>/unlike")
+def unlike_tweet(tweet_id):
+    query = "DELETE FROM liked_tweets WHERE user_id = %(user_id)s AND tweet_id = %(tweet_id)s"
+    data = {
+        'user_id': session['user_id'],
+        'tweet_id': tweet_id
+    }
+    mysql = connectToMySQL(schema)
+    mysql.query_db(query, data)
+    return redirect("/home")
+
+@app.route("/tweets/<tweet_id>/delete")
+def delete_tweet(tweet_id):
+
+    query = "DELETE FROM liked_tweets WHERE tweet_id = %(tweet_id)s"
+    data = {
+        'tweet_id': tweet_id
+    }
+    mysql = connectToMySQL(schema)
+    mysql.query_db(query, data)
+
+    query = "DELETE FROM tweets WHERE tweet_id = %(tweet_id)s"
+    mysql = connectToMySQL(schema)
+    mysql.query_db(query, data)
+    return redirect("/home")
+
+@app.route("/follow/<user_id>")
+def follow_user(user_id):
+    query = "INSERT INTO followed_users (user_following, user_being_followed) VALUES (%(uid)s, %(uid2)s)"
+    mysql = connectToMySQL(schema)
+    data = {
+        'uid': session['user_id'],
+        'uid2': user_id
+    }
+    mysql.query_db(query, data)
+    return redirect("/home")
+
+@app.route("/unfollow/<user_id>")
+def unfollow_user(user_id):
+    query = "DELETE FROM followed_users WHERE user_following = %(uid)s AND user_being_followed = %(uid2)s"
+    data = {
+        'uid': session['user_id'],
+        'uid2': int(user_id)
+    }
+    mysql = connectToMySQL(schema)
+    mysql.query_db(query, data)
+    return redirect("/home")
+
 @app.route("/logout")
 def logout():
     session.clear()

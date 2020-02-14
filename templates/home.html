@@ -8,28 +8,94 @@
     <title>Home</title>
 </head>
 <body>
-    <!-- Menu -->
-    <div class="left_content">
-        <a href="/home" class="leht-row">Home</a>
-        <a href="/profile" class="leht-row">Profile</a>
-        <!-- <button onclick="changeBgColor('#FFF'); ">Display</button> -->
-        <div class="dropdown" class="leht-row">
-            <span>Display</span>
-            <div class="dropdown-content">
-                <button onclick="changeBgColor('#FFF'); " class="chBG">White</button><br>
-                <button onclick="changeBgColor('#00203FFF'); " class="chBG">Dark</button>
+    <div id="wrapper">
+        <!-- Menu -->
+        <div class="left_content">
+            <a href="/home" class="leht-row" >Home</a>
+            <a href="/profile" class="leht-row">Profile</a>
+            <!-- <button onclick="changeBgColor('#FFF'); ">Display</button> -->
+            <div class="dropdown" class="leht-row">
+                <span>Display</span>
+                <div class="dropdown-content">
+                    <button onclick="changeBgColor('#FFF'); " class="chBG">White</button><br>
+                    <button onclick="changeBgColor('#00203FFF'); " class="chBG">Dark</button>
+                </div>
             </div>
-          </div>
-          <a href="/logout" class="leht-row">Log Out</a>
-    </div>
+            <a href="/logout" class="leht-row">Log Out</a>
+        </div>
 
-    <div class="middle_content">
-        <h1>E</h1>
-    </div>
+        <div class="middle_content">
+            <div class="pageTitle decoration">
+                <h1>Home</h1>
+            </div>
+            <div class="first_div decoration">  
+                <h1 class="displayUserInformations"> {{user.first_name}} {{user.last_name}} </h1>
+                <form action="/tweets/create" method="POST">
+                    <textarea name="content" rows="3" cols="56" placeholder="What's happening?"></textarea>
+                    <input type="submit" value="Tweet" class="tweetBtn">
+                </form>
+            </div>
+            
+        {% for tweet in tweets %}
+            <div class="decoration">
+                <h1 class="displayUserInformations"> {{tweet.first_name}} {{tweet.last_name}} <span class="dot"></span>
+                {% if tweet.time_since_posted[0] %}
+                    {{tweet.time_since_posted[0]}} d
+                {% elif tweet.time_since_posted[1] %}
+                    {{tweet.time_since_posted[1]}} h
+                {% elif tweet.time_since_posted[2] %}
+                    {{tweet.time_since_posted[2]}} min
+                {% else %}
+                    less than a minute
+                {% endif%}
+                ago </h1>
+                <div class="tweetContent">
+                    <pre>{{tweet.content}}</pre>
+                </div>
+                <div class="buttons">
+                    {% if tweet.already_liked %}
+                    <a href='/tweets/{{tweet.tweet_id}}/unlike'><button >Unlike</button></a>
+                    {% else %}
+                    <a href='/tweets/{{tweet.tweet_id}}/add_like'><button>Like</button></a>
+                    {% endif %}
+                
+                    {% if session['user_id'] == tweet.user_id %}
+                    <a href='/tweets/{{tweet.tweet_id}}/delete'><button>Delete</button></a>
+                    {% endif %}
+                    <p>{{tweet.times_liked}} likes</p>
+                </div>
 
-    <div class="right_content">
-        <h1>BB</h1>
-    </div>
+            </div>
+        {% endfor %} 
 
+        </div>
+
+        <div class="right_content">
+            <div class="searchBar">
+                <form method="GET" action="/usersearch">  
+                    <input type="text" name="name" placeholder="Search" class="search">
+               </form>
+            </div>
+            <div class="whoToFollow">
+                <div class="whoToFollowTitle">
+                    <h3>Who to follow?</h3>
+                </div>
+                
+                    {% for user in users %}
+                    <div class="followUnfollowSession">
+                                {{user.first_name}} {{user.last_name}}
+                                    {% if user.user_id in followed_users %}
+                                        <button class="followUnfollowBtn"><a href="/unfollow/{{user.user_id}}">Unfollow</a></button>
+                                    {% else %}
+                                        <button class="followUnfollowBtn"><a href="/follow/{{user.user_id}}">Follow</a></button>
+                                    {% endif %}
+                            </tr>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
 </body>
 </html>
