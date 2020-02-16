@@ -238,6 +238,145 @@ def unfollow_user(user_id):
     mysql.query_db(query, data)
     return redirect("/home")
 
+@app.route("/usersearch", methods= ["GET"])
+def search():
+    mysql = connectToMySQL(schema)
+    query = "SELECT users.first_name FROM users WHERE users.first_name LIKE %%(name)s;"
+    data = {
+        "name" : request.args.get('first_name')
+    }
+    results = mysql.query_db(query, data)
+    print(results)
+    return render_template("usersearch.html", users = results)
+
+# Profile 
+
+@app.route('/profile/<user_id>')
+def profile(user_id):
+    if 'user_id' not in session:
+        return redirect("/")  
+    
+    mysql = connectToMySQL(schema)
+    query = "SELECT * FROM users WHERE user_id = %(id)s"
+    data = {
+        "id" : session['user_id']
+    } 
+    user = mysql.query_db(query, data)
+    
+    mysql = connectToMySQL(schema)
+    query = "SELECT tweets.user_id, tweets.tweet_id as tweet_id, users.first_name,users.last_name,tweets.content, tweets.created_at, tweets.content, COUNT(liked_tweets.tweet_id) as times_liked FROM liked_tweets RIGHT JOIN tweets ON tweets.tweet_id = liked_tweets.tweet_id JOIN users ON tweets.user_id = users.user_id where users.user_id = %(user_id)s GROUP BY tweets.tweet_id ORDER BY tweets.created_at DESC"
+    data = {
+        'user_id': user_id
+    }
+    tweets = mysql.query_db(query,data)
+    
+    mysql = connectToMySQL(schema)
+    query = "SELECT * FROM liked_tweets WHERE user_id = %(user_id)s"
+    data = {
+        'user_id': session['user_id']
+    }
+    liked_tweets = [tweet['tweet_id'] for tweet in mysql.query_db(query, data)]
+    
+    mysql = connectToMySQL(schema)
+    query = "SELECT user_being_followed FROM followed_users WHERE user_following = %(id)s"
+    data = {
+        'id': session['user_id']
+    }
+    followed_users = [user['user_being_followed'] for user in mysql.query_db(query, data)]
+    
+    for tweet in tweets:
+        time_since_posted = datetime.now() - tweet['created_at']
+        days = time_since_posted.days
+        hours = time_since_posted.seconds//3600 
+        minutes = (time_since_posted.seconds//60)%60
+        if tweet['tweet_id'] in liked_tweets:
+            tweet['already_liked'] = True
+        else:
+            tweet['already_liked'] = False        
+
+        tweet['time_since_posted'] = (days, hours, minutes)
+        
+    query = "SELECT followed_users.user_following, count(being_followed.user_id) as following FROM followed_users LEFT JOIN users on followed_users.user_following = users.user_id LEFT JOIN users as being_followed on followed_users.user_being_followed = being_followed.user_id WHERE followed_users.user_following =  %(uid)s"
+    data = {
+        'uid': user_id
+    }
+    mysql = connectToMySQL(schema)
+    following = mysql.query_db(query, data)
+    
+    query = "SELECT followed_users.user_being_followed, count(userFollowing.user_id) as followers FROM followed_users LEFT JOIN users on followed_users.user_being_followed = users.user_id LEFT JOIN users as userFollowing on followed_users.user_following = userFollowing.user_id WHERE followed_users.user_being_followed  = %(uid)s"
+    data = {
+        'uid': user_id
+    }
+    mysql = connectToMySQL(schema)
+    followers = mysql.query_db(query, data)
+    print(following)
+    print(followers)
+    return render_template("profile.html", user=user[0] ,tweets=tweets, followers=followers[0], following=following[0])
+
+@app.route("/tweetsP/<tweet_id>/add_like")
+def like_tweetP(tweet_id):
+    query = "INSERT INTO liked_tweets (user_id, tweet_id) VALUES (%(user_id)s, %(tweet_id)s)"
+    data = {
+        'user_id': session['user_id'],
+        'tweet_id': tweet_id
+    }
+    mysql = connectToMySQL(schema)
+    mysql.query_db(query, data)
+    return redirect("/profile/{}".format(user_id)) 
+
+@app.route("/tweetsP/<tweet_id>/unlike")
+def unlike_tweetP(tweet_id):
+    query = "DELETE FROM liked_tweets WHERE user_id = %(user_id)s AND tweet_id = %(tweet_id)s"
+    data = {
+        'user_id': session['user_id'],
+        'tweet_id': tweet_id
+    }
+    mysql = connectToMySQL(schema)
+    mysql.query_db(query, data)
+    return redirect("/profile/{}".format(user_id)) 
+
+@app.route("/tweetsP/<tweet_id>/delete")
+def delete_tweetP(tweet_id):
+    if 'user_id' not in session:
+        return redirect("/")  
+    
+    query = "DELETE FROM liked_tweets WHERE tweet_id = %(tweet_id)s"
+    data = {
+        'tweet_id': tweet_id
+    }
+    mysql = connectToMySQL(schema)
+    mysql.query_db(query, data)
+
+    query = "DELETE FROM tweets WHERE tweet_id = %(tweet_id)s"
+    mysql = connectToMySQL(schema)
+    mysql.query_db(query, data)
+    return redirect("/profile/{}".format(user_id)) 
+
+
+@app.route("/followP/<user_id>")
+def follow_userP(user_id):
+    query = "INSERT INTO followed_users (user_following, user_being_followed) VALUES (%(uid)s, %(uid2)s)"
+    mysql = connectToMySQL(schema)
+    data = {
+        'uid': session['user_id'],
+        'uid2': user_id
+    }
+    mysql.query_db(query, data)
+    return redirect("/profile/{}".format(user_id)) 
+    
+
+@app.route("/unfollowP/<user_id>")
+def unfollow_userP(user_id):
+    query = "DELETE FROM followed_users WHERE user_following = %(uid)s AND user_being_followed = %(uid2)s"
+    data = {
+        'uid': session['user_id'],
+        'uid2': int(user_id)
+    }
+    mysql = connectToMySQL(schema)
+    mysql.query_db(query, data)
+    return redirect("/profile/{}".format(user_id)) 
+
+
 @app.route("/logout")
 def logout():
     session.clear()

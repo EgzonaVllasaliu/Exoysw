@@ -189,3 +189,23 @@ body{
     .whoToFollowTitle{
         border-bottom: 1px solid whitesmoke;
     }
+    .decF{
+        border-bottom: 1px solid white;
+    }
+    .decF .followingfollowed{
+        display: inline-block;
+        color: white;
+        padding: 10px;
+        margin-left: 20%;        
+        font-size: 20px;
+    }
+    .first_divP{
+        margin-top: 80px;
+        color: white;
+        font-size: 14px;
+        text-align: center;
+    }
+    .posts{
+        font-size: 12px;
+        text-align: center;
+    }
